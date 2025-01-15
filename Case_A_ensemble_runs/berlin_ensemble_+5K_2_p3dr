@@ -1,0 +1,268 @@
+!-------------------------------------------------------------------------------
+!-- INITIALIZATION PARAMETER NAMELIST
+!-- Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/inipar
+!-------------------------------------------------------------------------------
+&initialization_parameters
+!
+!-- model grid
+!-------------------------------------------------------------------------------
+    nx = 239,
+    ny = 239,
+    nz = 150, 
+
+    dx = 10.0,
+    dy = 10.0,
+    dz = 10.0,
+
+    dz_stretch_level  = 300.0,
+    dz_stretch_factor =    1.05,
+    dz_max            =    40.0,
+
+    random_generator = 'random-parallel',
+    ensemble_member_nr = 2,
+    random_heatflux = .T.,
+!
+!-- pressure solver
+!-------------------------------------------------------------------------------
+     psolver = 'multigrid',
+     cycle_mg  = 'w',
+     mg_cycles = 2,
+     mg_switch_to_pe0_level = -1,
+
+!
+!-- initial and boundary conditions
+!-------------------------------------------------------------------------------
+    initializing_actions     = 'read_restart_data', 
+    constant_flux_layer      = .T.,
+
+!
+!-- wind speed
+!--------------------------------------
+     ug_surface = -4.3,
+     vg_surface =  1.4,
+
+!
+
+!-- temperature
+!--------------------------------------
+    pt_surface                 = 299.0,    
+    bc_pt_b                    = 'dirichlet',
+    pt_vertical_gradient       =  5.67, 1.25, 0.34, 0.25,
+    pt_vertical_gradient_level =   45.0, 95.0, 185.0, 2448.23, 3888.23,
+!
+!-- humidity
+!--------------------------------------
+     humidity                  = .T.,
+     allow_roughness_limitation = .TRUE.,
+     q_surface                 =  0.007, 
+     bc_q_b                    = 'dirichlet',
+
+     q_vertical_gradient       = 0.0005, 0.00017, -0.0000706, -0.0003, -0.000517, 0.00023, 0.000149, -0.000064,
+     q_vertical_gradient_level = 45, 155, 275, 405, 565, 1599.305, 1630.02, 2448.23, 3888.23,
+
+! 
+!-- time
+!-------------------------------------------------------------------------------
+     origin_date_time        = '2022-07-19 00:00:00 +00',
+!
+!-- wall/soil spinup
+!-------------------------------------------------------------------------------
+    spinup_time              = 86400.0,
+    spinup_pt_mean           =    299.0,  
+    spinup_pt_amplitude      =      4.0,
+    dt_spinup                =     60.0,
+!
+!--  building topology
+!-------------------------------------------------------------------------------
+    topography               = 'read_from_file',
+
+!
+!-- restart
+!--------------------------------------
+    restart_data_format = 'mpi_shared_memory',    
+
+!
+!-- Rayleigh damping
+!-------------------------------------------------------------------------------
+    scalar_rayleigh_damping    = .T.,
+    rayleigh_damping_height    = 1500.0,  
+    rayleigh_damping_factor    =    0.01,
+    pt_damping_factor          =    0.05,
+    pt_damping_width           =  1200.0,
+!
+/
+!
+!-------------------------------------------------------------------------------
+!-- RUNTIME PARAMETER NAMELIST
+!-- Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/d3par
+!-------------------------------------------------------------------------------
+ &runtime_parameters
+!
+!-- run time
+!-------------------------------------------------------------------------------
+    end_time                 =   172800.0, !48 hours
+    termination_time_needed  =    3600.0,
+
+    create_disturbances      = .T.,   
+!
+!-- processor topology
+!-------------------------------------------------------------------------------
+    npex = 20,
+    npey = 20,
+!-- 2d/3d output
+!-------------------------------------------------------------------------------
+    do3d_at_begin         = .T.,
+    do2d_at_begin         = .T.,
+
+    dt_data_output        =  1800.0,
+
+    dt_data_output_av     =  1800.0,
+    averaging_interval    =  1800.0,
+
+    dt_domask             =  1800.0,
+    dt_do2d_xy            =  1800.0,
+    section_xy            = 1,  2, 3, 4, 5, 6, 7, 8, 9, 10,
+
+
+!
+! sfc xy sections and soil data 
+!------------------------------------------------------------------------------
+    data_output = 'u_av',
+                  'v_av',
+                  'w_av',
+                  'rh_av',
+                  'theta_av',
+                  'ta_av',
+                  'ti_av',
+                  'wq_product_av',
+                  'wtheta_product_av',
+                  'm_soil_av',
+                  't_soil_av',
+                  'shf*_xy_av',                 
+                  'ghf*_xy_av',
+                  'tsurf*_xy_av',
+                  'wspeed_10m*_xy_av',
+                  'rad_net*_xy_av',
+                  'rad_lw_in*_xy_av',
+                  'rad_lw_out*_xy_av',
+                  'rad_sw_in*_xy_av',
+                  'rad_sw_out*_xy_av',
+                  'qsws*_xy_av',                 
+                  'qsurf*_xy_av',
+                  'theta_2m*_xy_av',
+                  't*_xy_av',
+                  'ol*_xy_av',
+                  'us*_xy_av',
+                  'z0*_xy_av',
+!
+!-- timeseries output
+!-------------------------------------------------------------------------------
+    dt_run_control =   0.0,
+    dt_dots        =   30.0,
+
+!
+!-- profile output
+!-------------------------------------------------------------------------------
+    skip_time_dopr        = 0.0,
+    dt_dopr               = 600.0,
+    averaging_interval_pr = 600.0,
+    dt_averaging_input_pr = 0.0,
+
+    data_output_pr = 'e', 'e*','#km', '#l',
+                     '#u', 'w"u"', 'w*u*', 'wu', 'u*2',
+                     '#v', 'w"v"', 'w*v*', 'wv', 'v*2',
+                     'w',  'w*2',
+                     '#theta', 'w"theta"', 'w*theta*','wtheta', 'theta*2',
+                     '#q', 'w"q"', 'w*q*','wq', 'q*2',
+                     'rad_lw_in', 'rad_lw_out','#t_soil', '#m_soil',
+                     'rad_lw_hr', 'rad_sw_hr',
+
+
+    netcdf_data_format = 4,
+
+ / ! end of runtime_parameters namelist
+
+!-------------------------------------------------------------------------------
+!-- RADIATION MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/radpar
+!-------------------------------------------------------------------------------
+ &radiation_parameters
+
+    radiation_scheme          = 'rrtmg',
+    dt_radiation              =   300.0,
+    constant_albedo           =     .F.,
+    surface_reflections       =     .T.,
+    nrefsteps                 =       3,
+    mrt_nlevels               =       5,
+    localized_raytracing      =      .T.,
+ / ! end of radiation_parameters namelist
+
+!------------------------------------------------------------------------------
+!-- URBAN SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/usmpar
+!------------------------------------------------------------------------------
+&urban_surface_parameters
+
+    wall_inner_temperature   = 297.85,
+    window_inner_temperature = 297.85,
+    roof_inner_temperature   = 297.85,
+
+ / ! end of urban_surface_parameters namelist
+
+
+!---------------------------------------------------------------------------------------
+!-- INDOOR MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/indoor_parameters
+!---------------------------------------------------------------------------------------
+&indoor_parameters
+     indoor_during_spinup = .F.,
+     initial_indoor_temperature = 297.85,  
+/
+
+!------------------------------------------------------------------------------
+!-- LAND SURFACE MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/lsmpar
+!------------------------------------------------------------------------------
+ &land_surface_parameters
+
+    vegetation_type  = 2,
+    soil_type        = 3,
+
+    soil_moisture    = 0.185,  0.184,  0.183,  0.181,   0.183 , 0.186,  0.220,  0.277,
+    soil_temperature = 298.7, 297.40,  296.0, 293.30,  292.37, 290.50, 289.80, 293.61,
+    deep_soil_temperature =  293.61,
+
+    aero_resist_kray       = .T.,
+    constant_roughness     = .T.,
+    conserve_water_content = .T.,
+
+ / ! end of land_surface_parameters namelist
+
+!------------------------------------------------------------------------------
+!-- PLANT CANOPY MODEL PARAMETER NAMELIST
+!   Documentation: https://palm.muk.uni-hannover.de/trac/wiki/doc/app/canpar
+!------------------------------------------------------------------------------
+&plant_canopy_parameters
+
+    canopy_mode         = 'read_from_file',
+    canopy_drag_coeff   = 0.3,
+
+ / ! end of plant_canopy_parameters namelist
+!
+!---------------------------------------------------------------------------------------
+!-- BULK CLOUD PHYSICS PARAMETER NAMELIST
+!   Documentation: http://palm.muk.uni-hannover.de/trac/wiki/doc/app/bulk_cloud_parameters
+!---------------------------------------------------------------------------------------
+&bulk_cloud_parameters
+   cloud_scheme      = 'kessler',
+   switch_off_module = .FALSE.,
+
+!   cloud_water_sedimentation  = .TRUE.,
+ 
+/
+!-------------------------------------------------------------------------------
+!-- OFFLINE NESTING PARAMETERS NAMELIST
+!-------------------------------------------------------------------------------
+&xxnesting_offl_parameters
+
+/ ! end of nesting_offl_parameters namelist
